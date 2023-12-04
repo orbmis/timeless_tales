@@ -94,7 +94,7 @@ mod TimelessTalesContract {
         // token_uri returns the token uri
         ////////////////////////////////
         fn get_token_uri(self: @ContractState, token_id: u256) -> felt252 {
-            assert(self._exists(token_id), 'ERC721: invalid token ID');
+            assert(self._exists(token_id), 'TTT: ERC721: invalid token ID');
             self.token_uri.read(token_id)
         }
 
@@ -102,7 +102,7 @@ mod TimelessTalesContract {
         // balance_of function returns token balance
         ////////////////////////////////
         fn balance_of(self: @ContractState, account: ContractAddress) -> u256 {
-            assert(account.is_non_zero(), 'ERC721: address zero');
+            assert(account.is_non_zero(), 'TTT: ERC721: address zero');
             self.balances.read(account)
         }
 
@@ -111,7 +111,7 @@ mod TimelessTalesContract {
         ////////////////////////////////
         fn owner_of(self: @ContractState, token_id: u256) -> ContractAddress {
             let owner = self.owners.read(token_id);
-            assert(owner.is_non_zero(), 'ERC721: invalid token ID');
+            assert(owner.is_non_zero(), 'TTT: ERC721: invalid token ID');
             owner
         }
 
@@ -119,7 +119,7 @@ mod TimelessTalesContract {
         // get_approved function returns approved address for a token
         ////////////////////////////////
         fn get_approved(self: @ContractState, token_id: u256) -> ContractAddress {
-            assert(self._exists(token_id), 'ERC721: invalid token ID');
+            assert(self._exists(token_id), 'TTT: ERC721: invalid token ID');
             self.token_approvals.read(token_id)
         }
 
@@ -148,7 +148,7 @@ mod TimelessTalesContract {
         ////////////////////////////////
         fn set_approval_for_all(ref self: ContractState, operator: ContractAddress, approved: bool) {
             let owner = get_caller_address();
-            assert(owner != operator, 'ERC721: approve to caller');
+            assert(owner != operator, 'TTT: ERC721: approve to caller');
             self.operator_approvals.write((owner, operator), approved);
             self.emit(
                 ApprovalForAll{ owner: owner, operator: operator, approved: approved }
@@ -188,7 +188,7 @@ mod TimelessTalesContract {
         // internal function that sets the token uri
         ////////////////////////////////
         fn _set_token_uri(ref self: ContractState, token_id: u256, token_uri: felt252) {
-            assert(self._exists(token_id), 'ERC721: invalid token ID');
+            assert(self._exists(token_id), 'TTT: ERC721: invalid token ID');
             self.token_uri.write(token_id, token_uri)
         }
 
@@ -197,9 +197,9 @@ mod TimelessTalesContract {
         ////////////////////////////////
         fn _transfer(ref self: ContractState, from: ContractAddress, to: ContractAddress, token_id: u256) {
             // check that from address is equal to owner of token
-            assert(from == self.owner_of(token_id), 'ERC721: Caller is not owner');
+            assert(from == self.owner_of(token_id), 'TTT: ERC721: Caller is not owner');
             // check that to address is not zero
-            assert(to.is_non_zero(), 'ERC721: transfer to 0 address');
+            assert(to.is_non_zero(), 'TTT: ERC721: transfer to 0 address');
 
             // remove previously made approvals
             self.token_approvals.write(token_id, Zeroable::zero());
@@ -224,7 +224,7 @@ mod TimelessTalesContract {
             assert(to.is_non_zero(), 'TO_IS_ZERO_ADDRESS');
 
             // Ensures token_id is unique
-            assert(!self.owner_of(token_id).is_non_zero(), 'ERC721: Token already minted');
+            assert(!self.owner_of(token_id).is_non_zero(), 'TTT: ERC721: Token already minted');
 
             // Increase receiver balance
             let receiver_balance = self.balances.read(to);
